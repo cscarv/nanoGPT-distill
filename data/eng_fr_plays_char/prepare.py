@@ -26,6 +26,11 @@ with open(theatre_classique_file_path, 'r', encoding='utf-8') as f:
     data_theatre_classique = f.read()
 print(f"length of TheatreClassique dataset in characters: {len(data_theatre_classique):,}")
 
+# truncate TheatreClassique to same length as Shakespeare dataset
+if len(data_theatre_classique) > len(data_shakespeare):
+    data_theatre_classique = data_theatre_classique[:len(data_shakespeare)]
+    print(f"Truncated TheatreClassique dataset to {len(data_theatre_classique):,} characters to match Shakespeare dataset length.")
+
 # combine both datasets
 data = data_shakespeare + "\n" + data_theatre_classique
 print(f"length of combined dataset in characters: {len(data):,}")
@@ -75,6 +80,13 @@ train_ids_fr = np.array(train_ids_fr, dtype=np.uint16)
 val_ids_fr = np.array(val_ids_fr, dtype=np.uint16)
 train_ids_fr.tofile(os.path.join("/nobackup/users/scarv/multi-teacher-distillation/data/french/TheatreClassique", 'train.bin'))
 val_ids_fr.tofile(os.path.join("/nobackup/users/scarv/multi-teacher-distillation/data/french/TheatreClassique", 'val.bin'))
+
+# union of train and val sets
+train_ids_joint = np.concatenate((train_ids_eng, train_ids_fr))
+val_ids_joint = np.concatenate((val_ids_eng, val_ids_fr))
+# save the joint train and val sets
+train_ids_joint.tofile(os.path.join(os.path.dirname(__file__), 'joint_data', 'train.bin'))
+val_ids_joint.tofile(os.path.join(os.path.dirname(__file__), 'joint_data', 'val.bin'))
 
 # save the meta information as well, to help us encode/decode later
 meta = {
