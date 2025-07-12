@@ -150,6 +150,10 @@ if os.path.exists(meta_path):
 # model init
 model_args = dict(n_layer=n_layer, n_head=n_head, n_embd=n_embd, block_size=block_size,
                   bias=bias, vocab_size=None, dropout=dropout) # start with model_args from command line
+student_model_args = model_args.copy() # keep a copy for the student model
+# more layers and heads for multilingual distillation
+student_model_args['n_layer'] = 24 # 4x the layers for multilingual
+student_model_args['n_head'] = 24 # 4x the attention heads for multilingual
 if init_from == 'scratch':
     # init a new model from scratch
     print("Initializing a new model from scratch")
@@ -157,7 +161,8 @@ if init_from == 'scratch':
     if meta_vocab_size is None:
         print("defaulting to vocab_size of GPT-2 to 50304 (50257 rounded up for efficiency)")
     model_args['vocab_size'] = meta_vocab_size if meta_vocab_size is not None else 50304
-    gptconf = GPTConfig(**model_args)
+    student_model_args['vocab_size'] = model_args['vocab_size']
+    gptconf = GPTConfig(**student_model_args)
     model = GPT(gptconf)
 elif init_from == 'resume':
     print(f"Resuming training from {out_dir}")
@@ -341,7 +346,7 @@ while True:
                 checkpoint = {
                     'model': raw_model.state_dict(),
                     'optimizer': optimizer.state_dict(),
-                    'model_args': model_args,
+                    'model_args': student_model_args,
                     'iter_num': iter_num,
                     'best_val_loss': best_val_loss,
                     'config': config,
