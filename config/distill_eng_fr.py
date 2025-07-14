@@ -9,9 +9,9 @@ log_interval = 10 # don't print too too often
 # validation code currently meaningless for distillation, so always save a checkpoint regardless of validation loss
 always_save_checkpoint = True
 
-wandb_log = False # override via command line if you like
-wandb_project = 'eng-fr-distill-char'
-wandb_run_name = 'mini-gpt'
+wandb_log = True # override via command line if you like
+wandb_project = 'multilingual-distillation-nanogpt'
+wandb_run_name = 'english-french-same-arch-as-teachers'
 
 dataset = 'eng_fr_plays_char/joint_data' # this is the path to the train.bin and val.bin files
 # dataset = 'english/shakespeare' # this is the path to the train.bin and val.bin files
@@ -27,7 +27,7 @@ n_embd = 384
 dropout = 0.2
 
 learning_rate = 1e-3 # with baby networks can afford to go a bit higher
-max_iters = 5000
+max_iters = 15000
 lr_decay_iters = 5000 # make equal to max_iters usually
 min_lr = 1e-4 # learning_rate / 10 usually
 beta2 = 0.99 # make a bit bigger because number of tokens per iter is small

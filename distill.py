@@ -152,8 +152,8 @@ model_args = dict(n_layer=n_layer, n_head=n_head, n_embd=n_embd, block_size=bloc
                   bias=bias, vocab_size=None, dropout=dropout) # start with model_args from command line
 student_model_args = model_args.copy() # keep a copy for the student model
 # more layers and heads for multilingual distillation
-student_model_args['n_layer'] = 24 # 4x the layers for multilingual
-student_model_args['n_head'] = 24 # 4x the attention heads for multilingual
+# student_model_args['n_layer'] = 24 # 4x the layers for multilingual
+# student_model_args['n_head'] = 24 # 4x the attention heads for multilingual
 if init_from == 'scratch':
     # init a new model from scratch
     print("Initializing a new model from scratch")
