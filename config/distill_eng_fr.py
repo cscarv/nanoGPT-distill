@@ -28,7 +28,7 @@ dropout = 0.2
 
 learning_rate = 1e-3 # with baby networks can afford to go a bit higher
 max_iters = 15000
-lr_decay_iters = 5000 # make equal to max_iters usually
+lr_decay_iters = 1e6 # don't want LR decay, so make this very large
 min_lr = 1e-4 # learning_rate / 10 usually
 beta2 = 0.99 # make a bit bigger because number of tokens per iter is small
 

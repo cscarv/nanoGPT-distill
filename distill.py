@@ -335,7 +335,6 @@ while True:
         if wandb_log:
             wandb.log({
                 "iter": iter_num,
-                "train/loss": losses['train'],
                 "val/loss": losses['val'],
                 "lr": lr,
                 "mfu": running_mfu*100, # convert to percentage
@@ -401,6 +400,15 @@ while True:
     # step the optimizer and scaler if training in fp16
     scaler.step(optimizer)
     scaler.update()
+    # log the loss if we are at the log interval
+    if master_process and iter_num % log_interval == 0:
+        if wandb_log:
+            wandb.log({
+                "iter": iter_num,
+                "train/loss": loss.item(),
+                "lr": lr,
+                "mfu": running_mfu*100, # convert to percentage
+            })
     # flush the gradients as soon as we can, no need for this memory anymore
     optimizer.zero_grad(set_to_none=True)
 
