@@ -1,7 +1,7 @@
 # train a miniature character-level shakespeare model
 # good for debugging and playing on macbooks and such
 
-out_dir = 'out-eng-fr-distill-char'
+out_dir = 'out-eng-fr-distill-char-our-weights-fixed' # name of the output directory
 eval_interval = 250 # keep frequent because we'll overfit
 eval_iters = 200
 log_interval = 10 # don't print too too often
@@ -11,7 +11,7 @@ always_save_checkpoint = True
 
 wandb_log = True # override via command line if you like
 wandb_project = 'multilingual-distillation-nanogpt'
-wandb_run_name = 'english-french-same-arch-as-teachers'
+wandb_run_name = 'english-french-same-arch-as-teachers-our-weights-fixed?'
 
 dataset = 'eng_fr_plays_char/joint_data' # this is the path to the train.bin and val.bin files
 # dataset = 'english/shakespeare' # this is the path to the train.bin and val.bin files

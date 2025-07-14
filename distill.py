@@ -372,19 +372,24 @@ while True:
             logprob_x_eng, _ = batch_sequence_logprob(eng_teacher_logits, Y) # (B, )
             # compute KL divergence loss between the student and the English teacher
             eng_loss = F.kl_div(F.log_softmax(student_logits, dim=-1), F.softmax(eng_teacher_logits, dim=-1), reduction='none') # (B, block_size, vocab_size)
-            eng_loss = eng_loss.sum(dim=-1).mean() # (B, ) -> mean over block_size
+            # print(f"eng_loss shape before reduction: {eng_loss.shape}") # print the shape of the logits for logging
+            eng_loss = eng_loss.sum(dim=-1).mean(dim=-1) # (B, ) -> mean over block_size
+            # print(f"eng_loss shape: {eng_loss.shape}, eng_loss: {eng_loss}") # print the shape and value of the loss for logging
             # compute the logits and log-probs from the French teacher
             with torch.no_grad():
                 fr_teacher_logits, _ = fr_teacher(X, Y)
             logprob_x_fr, _ = batch_sequence_logprob(fr_teacher_logits, Y) # (B, )
             # compute KL divergence loss between the student and the French teacher
             fr_loss = F.kl_div(F.log_softmax(student_logits, dim=-1), F.softmax(fr_teacher_logits, dim=-1), reduction='none') # (B, block_size, vocab_size)
-            fr_loss = fr_loss.sum(dim=-1).mean() # (B, ) -> mean over block_size
+            # print(f"fr_loss shape before reduction: {fr_loss.shape}") # print the shape of the logits for logging
+            fr_loss = fr_loss.sum(dim=-1).mean(dim=-1) # (B, ) -> mean over block_size
+            # print(f"fr_loss shape: {fr_loss.shape}, fr_loss: {fr_loss}") # print the shape and value of the loss for logging
             # weights for the teachers are the softmax of the log-probabilities
             logprob_x_multilingual = torch.stack([logprob_x_eng, logprob_x_fr], dim=1) # (B, 2)
             # print(f"logprob_x_multilingual: {logprob_x_multilingual.mean(dim=0)}") # print the mean log-probabilities for logging
             teacher_weights = F.softmax(logprob_x_multilingual, dim=1) # (B, 2)
             # teacher_weights = torch.ones(logprob_x_multilingual.shape[0], 2, device=device) / 2.0 # (B, 2), equal weights for both teachers
+            # print(f"teacher weights shape: {teacher_weights.shape}") # print the shape of the weights for logging
             # print(f"teacher weights: {teacher_weights}") # print the weights for logging
             # compute the final loss as a weighted sum of the two teacher losses
             loss = (teacher_weights[:, 0] * eng_loss + teacher_weights[:, 1] * fr_loss).mean() # scalar
